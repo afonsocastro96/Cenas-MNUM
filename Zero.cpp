@@ -1,6 +1,5 @@
 #include <iostream> //cout
 #include <cmath> //contas
-#include <Windows.h>
 
 using namespace std;
 
@@ -13,12 +12,12 @@ void corda();
 long double banana(long double x);
 long double media(long double a, long double b);
 
-int main(){
+/*int main(){
 
 	int metodo = -1;
 
 	do{
-		system("CLS");
+		//system("CLS");
 		cout << "Funcao: x^6-x-cos(0.2x+1)" << endl;
 		cout << "Escolher o metodo de calculo:" << endl;
 		cout << "[0]Exit" << endl << "[1]Bissecao" << endl << "[2]METHOD2" << endl << "[3]METHOD3" << endl;
@@ -28,7 +27,7 @@ int main(){
 	switch (metodo){
 	case 0:
 		cout << "O programa vai sair" << endl;
-		Sleep(1000);
+		//Sleep(1000);
 		return 0;
 		break;
 	case 1:
@@ -49,7 +48,7 @@ int main(){
 	cin >> exit;
 	if (exit == 'n'){
 		cout << "O programa vai sair" << endl;
-		Sleep(1000);
+		//Sleep(1000);
 		return 0;
 	}
 	else if (exit == 's'){
@@ -60,7 +59,7 @@ int main(){
 		cin >> exit;
 		if (exit == 'n'){
 			cout << "O programa vai sair" << endl;
-			Sleep(1000);
+			//Sleep(1000);
 			return 0;
 		}
 		else if (exit == 's'){
@@ -70,7 +69,7 @@ int main(){
 
 	int gelado = 0;
 	return gelado;
-}
+}*/
 
 long double funcao(long double x) {
 	return x*exp(-7200 * x) - 0.053*exp(-669.6);
