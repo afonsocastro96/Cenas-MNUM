@@ -1,80 +1,65 @@
 #include <iostream> //cout
 #include <cmath> //contas
 
+#include "zeros.h"
+
 using namespace std;
 
-#define TMAX 	7200
+#define TMAX 	120
 #define KET		0.093
 
-long double func(long double);
-long double dfunc(long double);
+#define GUESSA	-0.2
+#define GUESSB	0.001
 
-#define GUESSA	0
-#define GUESSB	1.5
+#define GUESSNEWTON	0
+
 #define EPSILON 0.00001
 
-long double funcao(long double x);
 
-void bissec();
-void corda();
-void newton();
-long double media(long double, long double);
+int zeros() {
+	cout << endl << endl << "Metodo: " << endl << endl;
+	cout << "1. Bisseccao" << endl;
+	cout << "2. Corda" << endl;
+	cout << "3. Newton" << endl;
+	cout << "4. Sair" << endl;
 
-/*int main(){
+	int opt;
+	cin >> opt;
 
-	int metodo = -1;
+	switch (opt) {
+	case 1: {
+		bissec();
+		return 0;
+	}
+	case 2: {
+		corda();
+		return 0;
+	}
+	case 3: {
+		newton();
+		return 0;
+	}
+	case 4: {
+		return 0;
+	}
+	default: {
+		zeros();
+		break;
+	}
+	}
 
-	do{
-	//system("CLS");
-	cout << "Funcao: x^6-x-cos(0.2x+1)" << endl;
-	cout << "Escolher o metodo de calculo:" << endl;
-	cout << "[0]Exit" << endl << "[1]Bissecao" << endl << "[2]Corda" << endl << "[3]Newton" << endl;
-	cin >> metodo;
-	} while (cin.fail() || metodo < 0 || metodo > 3);
-
-	switch (metodo){
-	case 0:
-	cout << "O programa vai sair" << endl;
-	//Sleep(1000);
 	return 0;
-	break;
-	case 1:
-	//METHOD1
-	bissec();
-	break;
-	case 2:
-	//METHOD2
-	corda();
-	break;
-	case 3:
-	//METHOD3
-	newton();
-	break;
-	}
-
-	char exit = 'n';
-
-	cout << endl << "Voltar ao menu? (s/n)";
-	cin >> exit;
-	if (exit == 'n'){
-	cout << "O programa vai sair" << endl;
-	//Sleep(1000);
-	return 0;
-	}
-	else if (exit == 's'){
-	main();
-	}
-	return metodo;
-	}*/
-
-int main() {
-	bissec();
 }
 long double f(long double x) {
-	return pow(x, 6) - x - cos(0.2*x + 1);
+	return x * exp(-TMAX * x) - KET * exp(-KET*TMAX);
+	//return x - 2 * log(x) - 5;
+}
+long double df(long double x) {
+	return exp(-TMAX * x) - TMAX * exp(-TMAX * x);
+	//return 1 - 2/x;
 }
 
-void bissec(){
+void bissec() {
 	long double a = GUESSA;
 	long double b = GUESSB;
 	long double fa = f(a);
@@ -82,14 +67,23 @@ void bissec(){
 
 	long double x = (a + b) / 2;
 	long double fx = f(x);
+
 	long double xanterior;
 
 	long double erro = 1;
 
 	int i = 1;
 
-	while (erro > EPSILON){
-		cout << "n: " << i << " a: " << a << " b: " << b << " x: " << x << " f(a)= " << fa << " f(b)= " << fb << " f(x)= " << fx << " erro: " << erro << endl;
+	while (erro > EPSILON) {
+		cout << "n: " << i << " a: " << a << " b: " << b << " x: " << x
+				<< " f(a)= " << fa << " f(b)= " << fb << " f(x)= " << fx
+				<< " erro: " << erro << endl;
+
+		if (fa * fx > 0)
+			a = x;
+		else
+			b = x;
+
 		fa = f(a);
 		fb = f(b);
 
@@ -103,8 +97,7 @@ void bissec(){
 	}
 }
 
-
-void corda(){
+void corda() {
 	long double a = GUESSA;
 	long double b = GUESSB;
 
@@ -119,12 +112,13 @@ void corda(){
 	int i = 1;
 
 	while (erro > EPSILON) {
-		cout << "n: " << i << " a: " << a << " b: " << b << " xn: " << xn << " f(a)= " << fa << " f(b)= " << fb << " f(xn)= " << fxn << endl;
+		cout << "n: " << i << " a: " << a << " b: " << b << " xn: " << xn
+				<< " f(a)= " << fa << " f(b)= " << fb << " f(xn)= " << fxn
+				<< endl;
 
-		if ((fa / fxn) > 0){
+		if ((fa / fxn) > 0) {
 			a = xn;
-		}
-		else {
+		} else {
 			b = xn;
 		}
 
@@ -136,48 +130,30 @@ void corda(){
 		xn = (a * f(b) - b * f(a)) / (fb - fa);
 		fxn = f(xn);
 
-
 		erro = abs((xn - xnanterior) / xn);
 		i++;
 	}
 }
 
-void newton(){
+void newton() {
+	int i = 1;
 
-	long double xn, e;
+	long double xn = GUESSNEWTON;
+	long double fxn = f(xn);
+	long double dfxn = df(xn);
 
-	unsigned i = 0;
-
-	cout << "Insira um guess: " << endl;
-	cin >> xn;
-	cout << "Insira um erro absoluto positivo";
-	cin >> e;
-
-	long double fxn = func(xn);
-	long double dfxn = dfunc(xn);
 	long double xnmaisum = xn - (fxn / dfxn);
-	long double erro;
+	long double erro = 1;
 
-	cout << " I |  Xn  |  F(Xn)  |  F'(Xn)  |  X(n+1)  |  X(n+1)-x(n)  " << endl;
-
-
-	do{
-		erro = xnmaisum - xn;
-		cout << " " << i << " |" << xn << " |" << fxn << " |" << dfxn << " |" << xnmaisum << " |" << erro << endl;
+	while (erro > EPSILON) {
+		erro = abs(xnmaisum - xn);
+		cout << "n: " << i << " xn: " << xn << " f(xn): " << fxn << " df(xn): "
+				<< dfxn << " x(n+1): " << xnmaisum << " Erro: " << erro << endl;
 		xn = xnmaisum;
-		i++;
-		fxn = func(xn);
-		dfxn = dfunc(xn);
+		fxn = f(xn);
+		dfxn = df(xn);
 		xnmaisum = xn - (fxn / dfxn);
-	} while (erro > e);
-
-	cout << endl << "O zero aproximado e: " << xnmaisum;
+		i++;
+	}
 }
 
-long double dfunc(long double x){
-	return x;
-}
-
-long double media(long double a, long double b){
-	return (a + b) / 2;
-}
