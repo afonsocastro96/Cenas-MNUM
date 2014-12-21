@@ -1,6 +1,5 @@
 #include <iostream> //cout
 #include <cmath> //contas
-#include <Windows.h>
 
 using namespace std;
 
@@ -9,41 +8,48 @@ using namespace std;
 
 long double func(long double);
 long double dfunc(long double);
+
+#define GUESSA	0
+#define GUESSB	1.5
+#define EPSILON 0.00001
+
+long double funcao(long double x);
+
 void bissec();
 void corda();
 void newton();
 long double media(long double, long double);
 
-int main(){
+/*int main(){
 
 	int metodo = -1;
 
 	do{
-		system("CLS");
-		cout << "Funcao: x^6-x-cos(0.2x+1)" << endl;
-		cout << "Escolher o metodo de calculo:" << endl;
-		cout << "[0]Exit" << endl << "[1]Bissecao" << endl << "[2]Corda" << endl << "[3]Newton" << endl;
-		cin >> metodo;
+	//system("CLS");
+	cout << "Funcao: x^6-x-cos(0.2x+1)" << endl;
+	cout << "Escolher o metodo de calculo:" << endl;
+	cout << "[0]Exit" << endl << "[1]Bissecao" << endl << "[2]Corda" << endl << "[3]Newton" << endl;
+	cin >> metodo;
 	} while (cin.fail() || metodo < 0 || metodo > 3);
 
 	switch (metodo){
 	case 0:
-		cout << "O programa vai sair" << endl;
-		Sleep(1000);
-		return 0;
-		break;
+	cout << "O programa vai sair" << endl;
+	//Sleep(1000);
+	return 0;
+	break;
 	case 1:
-		//METHOD1
-		bissec();
-		break;
+	//METHOD1
+	bissec();
+	break;
 	case 2:
-		//METHOD2
-		corda();
-		break;
+	//METHOD2
+	corda();
+	break;
 	case 3:
-		//METHOD3
-		newton();
-		break;
+	//METHOD3
+	newton();
+	break;
 	}
 
 	char exit = 'n';
@@ -51,72 +57,88 @@ int main(){
 	cout << endl << "Voltar ao menu? (s/n)";
 	cin >> exit;
 	if (exit == 'n'){
-		return 0;
+	cout << "O programa vai sair" << endl;
+	//Sleep(1000);
+	return 0;
 	}
 	else if (exit == 's'){
-		main();
+	main();
 	}
 	return metodo;
+	}*/
+
+int main() {
+	bissec();
+}
+long double f(long double x) {
+	return pow(x, 6) - x - cos(0.2*x + 1);
 }
 
 void bissec(){
-	long double a, b, x, fa, fb, fx, e = 1,xn1;
+	long double a = GUESSA;
+	long double b = GUESSB;
+	long double fa = f(a);
+	long double fb = f(b);
 
-	cout << "Guess a: ";
-	cin >> a;
-	cout << "Guess b: ";
-	cin >> b;
+	long double x = (a + b) / 2;
+	long double fx = f(x);
+	long double xanterior;
 
-	while (e >= 0.0000001){
-		x = media(a, b);
-		fa = func(a);
-		fb = func(b);
-		fx = func(x);
-		xn1 = media(fa, fb);
-		cout << a << " | " << b << " | " << x << " | " << fa << " | " << fb << " | " << fx << " | ";
+	long double erro = 1;
 
-		if (fx < 0)
-			a = x;
-		if (fx > 0)
-			b = x;
+	int i = 1;
 
-		e = abs((xn1 - x) / xn1);
-		cout << e << endl;
+	while (erro > EPSILON){
+		cout << "n: " << i << " a: " << a << " b: " << b << " x: " << x << " f(a)= " << fa << " f(b)= " << fb << " f(x)= " << fx << " erro: " << erro << endl;
+		fa = f(a);
+		fb = f(b);
+
+		xanterior = x;
+
+		x = (a + b) / 2;
+		fx = f(x);
+
+		erro = abs((x - xanterior) / x);
+		i++;
 	}
 }
 
+
 void corda(){
-	long double a, b, x, fa, fb, fx, e = 1, xn1;
+	long double a = GUESSA;
+	long double b = GUESSB;
 
-	do{
-		cout << "Guess a: ";
-		cin >> a;
-		cout << "Guess b: ";
-		cin >> b;
+	long double fa = f(a);
+	long double fb = f(b);
 
-		if (fa*fb > 0)
-			cout << "Ambos os valores tem o mesmo sinal. Insira novo intervalo" << endl;
-	} while (fa*fb > 0);
+	long double xn = (a * f(b) - b * f(a)) / (fb - fa);
+	long double fxn = f(xn);
 
-	x = (a + b) / 2;
+	long double xnanterior;
+	long double erro = 1;
+	int i = 1;
 
-	while (e >= 0.0000001){
-		fa = func(a);
-		fb = func(b);
-		fx = func(x);
+	while (erro > EPSILON) {
+		cout << "n: " << i << " a: " << a << " b: " << b << " xn: " << xn << " f(a)= " << fa << " f(b)= " << fb << " f(xn)= " << fxn << endl;
 
-		xn1 = ((a*fb) - (b*fa)) / (fb - fa);
+		if ((fa / fxn) > 0){
+			a = xn;
+		}
+		else {
+			b = xn;
+		}
 
-		cout << a << " | " << b << " | " << x << " | " << fa << " | " << fb << " | " << fx << " | ";
+		fa = f(a);
+		fb = f(b);
 
-		if (fa*fx > 0)
-			a = x;
-		if (fb*fx > 0)
-			b = x;
+		xnanterior = xn;
 
-		e = abs((xn1 - x) / xn1);
-		cout << e << endl;
+		xn = (a * f(b) - b * f(a)) / (fb - fa);
+		fxn = f(xn);
 
+
+		erro = abs((xn - xnanterior) / xn);
+		i++;
 	}
 }
 
@@ -150,10 +172,6 @@ void newton(){
 	} while (erro > e);
 
 	cout << endl << "O zero aproximado e: " << xnmaisum;
-}
-
-long double func(long double x){
-	return x;
 }
 
 long double dfunc(long double x){
