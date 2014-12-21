@@ -97,10 +97,10 @@ void bissec(){
 
 	int i = 1;
 
-	while (i < 100){
-		cout << "n: " << i << " a: " << a << " b: " << b << " x: " << x << " f(a)= " << fa << " f(b)= " << fb << " f(x)= " << fx << endl;
+	while (erro > EPSILON){
+		cout << "n: " << i << " a: " << a << " b: " << b << " x: " << x << " f(a)= " << fa << " f(b)= " << fb << " f(x)= " << fx << " erro: " << erro << endl;
 
-		if (fa*fx < 0)
+		if (fa*fx > 0)
 			a = x;
 		else
 			b = x;
