@@ -6,6 +6,10 @@ using namespace std;
 #define TMAX 	7200
 #define KET		0.093
 
+#define GUESSA	0
+#define GUESSB	1.5
+#define EPSILON 0.00001
+
 long double funcao(long double x);
 void bissec();
 void corda();
@@ -71,37 +75,85 @@ long double media(long double a, long double b);
 	return gelado;
 }*/
 
-long double funcao(long double x) {
-	return x*exp(-7200 * x) - 0.053*exp(-669.6);
+int main() {
+	bissec();
+}
+long double f(long double x) {
+	return pow(x,6)-x-cos(0.2*x+1);
 }
 
 void bissec(){
-	long double a, b, x, fa, fb, fx, e = 1;
+	long double a = GUESSA;
+	long double b = GUESSB;
+	long double fa = f(a);
+	long double fb = f(b);
 
-	cout << "Guess a: ";
-	cin >> a;
-	cout << "Guess b: ";
-	cin >> b;
+	long double x = (a + b) / 2;
+	long double fx = f(x);
 
-	while (e >= 0.0000001){
-		x = (a + b) / 2;
-		fa = banana(a);
-		fb = banana(b);
-		fx = banana(x);
+	long double xanterior;
 
-		cout << a << " | " << b << " | " << x << " | " << fa << " | " << fb << " | " << fx << " | " << e << endl;
+	long double erro = 1;
+
+	int i = 1;
+
+	while (i < 100){
+		cout << "n: " << i << " a: " << a << " b: " << b << " x: " << x << " f(a)= " << fa << " f(b)= " << fb << " f(x)= " << fx << endl;
 
 		if (fa*fx < 0)
 			a = x;
-		if (fb*fx > 0)
+		else
 			b = x;
 
-		e = abs((media(a, b) - x) / media(a, b));
+		fa = f(a);
+		fb = f(b);
+
+		xanterior = x;
+
+		x = (a+b) / 2;
+		fx = f(x);
+
+		erro = abs((x - xanterior) / x);
+		i++;
 	}
 }
 
 void corda(){
+	long double a = GUESSA;
+	long double b = GUESSB;
 
+	long double fa = f(a);
+	long double fb = f(b);
+
+	long double xn = (a * f(b) - b * f(a)) / (fb-fa);
+	long double fxn = f(xn);
+
+	long double xnanterior;
+	long double erro = 1;
+	int i = 1;
+
+	while(erro > EPSILON) {
+		cout << "n: " << i << " a: " << a << " b: " << b << " xn: " << xn << " f(a)= " << fa << " f(b)= " << fb << " f(xn)= " << fxn << endl;
+
+		if((fa / fxn) > 0){
+			a = xn;
+		}
+		else {
+			b = xn;
+		}
+
+		fa = f(a);
+		fb = f(b);
+
+		xnanterior = xn;
+
+		xn = (a * f(b) - b * f(a)) / (fb-fa);
+		fxn = f(xn);
+
+
+		erro = abs((xn - xnanterior)/xn);
+		i++;
+	}
 }
 
 long double banana(long double x){
